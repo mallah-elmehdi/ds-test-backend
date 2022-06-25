@@ -54,8 +54,8 @@ class Auth:
 			self.config.jwt_secret,
 			algorithm=self.config.jwt_algorithm,
 		)
-		response = JSONResponse(status_code=status.HTTP_202_ACCEPTED, content="user signed in successfuly")
-		response.set_cookie(key=self.config.cookie_name, value=token, samesite="none", secure=True,httponly=True)
+		# response = JSONResponse(status_code=status.HTTP_202_ACCEPTED, content="user signed in successfuly")
+		response.set_cookie(key=self.config.cookie_name, value=token,  httponly=True, secure=True, samesite='none')
 		return response
 
 	# get_signin

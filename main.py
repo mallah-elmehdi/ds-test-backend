@@ -9,9 +9,9 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins="http://localhost:3000",
-      allow_credentials=True,
-      allow_methods=["GET", "POST", "OPTIONS"],
-      allow_headers=["Content-Type","Set-Cookie"], 
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type","Set-Cookie"],
 )
 
 app.include_router(api_router, prefix="/api")
