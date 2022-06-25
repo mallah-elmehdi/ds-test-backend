@@ -23,7 +23,7 @@ class Auth:
 
 		# check the user's cookie
 		token = jwt.decode(cookie, self.config.jwt_secret, algorithms=[self.config.jwt_algorithm])
-		
+
 		if token["user_id"] != self.config.user_id:
 			raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not allowed")
 
@@ -55,5 +55,19 @@ class Auth:
 			algorithm=self.config.jwt_algorithm,
 		)
 		response = JSONResponse(status_code=status.HTTP_202_ACCEPTED, content="user signed in successfuly")
-		response.set_cookie(key=self.config.cookie_name, value=token)
+		response.set_cookie(key=self.config.cookie_name, value=token, samesite="none", secure=True,httponly=True)
 		return response
+
+	# get_signin
+	def get_signed(self, request):
+		# get the cookie
+		cookie = request.cookies.get(self.config.cookie_name)
+
+		# check the availability of the cookie
+		if cookie != None:
+			return JSONResponse(
+				status_code=status.HTTP_401_UNAUTHORIZED, content="user already signed in"
+			)
+		return JSONResponse(
+			status_code=status.HTTP_200_OK, content="user is not signed in"
+		)
