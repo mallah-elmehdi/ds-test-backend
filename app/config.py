@@ -12,6 +12,7 @@ class Settings:
         user_id: str
         user_name: str
         password: str
+        cookie_expires: str
 
         class Config:
             env_file = ".env"

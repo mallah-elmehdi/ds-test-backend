@@ -16,34 +16,29 @@ class Service:
 
 	# get data for dashboard
 	async def get_dashboard(self):
-		# data = (
-		#     await self.db["genZ"].find({"sentence_entities" : {"$elemMatch": { "$elemMatch": {"$in": ['Stanford University']} } } }, projection={"_id": 1}).to_list(length=None)
-		# )
+		youngPeopledataSample = (
+		    await self.db["young_people"].find({}, projection={"logits": 1}).to_list(length=None)
+		)
 
-		data = (
+		genZdataSample = (
 			await self.db["genZ"]
 			.aggregate(
 				[
-					{"$match": {"sentence_entities": { "$not": {"$size": 0 } }}},
-					{"$project": {"sentence_entities": 1}},
-					{ "$unwind": "$sentence_entities"},
 					{
 						"$group": {
-							"_id": "$sentence_entities",
-
-							"size": {"$sum": 1}
+							"_id": "$category",
+							"sentence_sent_score": {"$sum": "$_id"}
 						}
 					},
-					# { "$match": {"_id":  {"$elemMatch": {"$in": ['Stanford University']}}}},
-					{"$sort": {"size": ASCENDING}},
+					{"$sort": {"sentence_sent_score": ASCENDING}},
 				]
 			)
-			.to_list(100)
+			.to_list(length=None)
 		)
 
-		if data == None:
+		if youngPeopledataSample == None or genZdataSample  == None:
 			raise HTTPException(
 				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="database went wrong"
 			)
 
-		return JSONResponse(status_code=status.HTTP_200_OK, content=data)
+		return JSONResponse(status_code=status.HTTP_200_OK, content={"genZ": genZdataSample, "youngPeople": youngPeopledataSample})

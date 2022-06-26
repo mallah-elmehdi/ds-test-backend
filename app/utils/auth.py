@@ -12,20 +12,20 @@ class Auth:
 
 	# authenticatiion protector
 	async def protector(self, request, call_next):
-		# get the cookie
-		cookie = request.cookies.get(self.config.cookie_name)
-
-		# check the availability of the cookie
-		if cookie == None:
-			raise HTTPException(
-				status_code=status.HTTP_401_UNAUTHORIZED, detail="user not logged in"
-			)
-
-		# check the user's cookie
-		token = jwt.decode(cookie, self.config.jwt_secret, algorithms=[self.config.jwt_algorithm])
-
-		if token["user_id"] != self.config.user_id:
-			raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not allowed")
+		# # get the cookie
+		# cookie = request.cookies.get(self.config.cookie_name)
+		#
+		# # check the availability of the cookie
+		# if cookie == None:
+		# 	raise HTTPException(
+		# 		status_code=status.HTTP_401_UNAUTHORIZED, detail="user not logged in"
+		# 	)
+		#
+		# # check the user's cookie
+		# token = jwt.decode(cookie, self.config.jwt_secret, algorithms=[self.config.jwt_algorithm])
+		#
+		# if token["user_id"] != self.config.user_id:
+		# 	raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not allowed")
 
 		return await call_next()
 
@@ -54,12 +54,16 @@ class Auth:
 			self.config.jwt_secret,
 			algorithm=self.config.jwt_algorithm,
 		)
-		# response = JSONResponse(status_code=status.HTTP_202_ACCEPTED, content="user signed in successfuly")
-		response.set_cookie(key=self.config.cookie_name, value=token,  httponly=True, secure=True, samesite='none')
+		response = JSONResponse(status_code=status.HTTP_202_ACCEPTED,
+			content={
+				"cookie": self.config.cookie_name + "=" + token,
+				"message": "user signed in successfuly"
+			})
+		# response.set_cookie(key=self.config.cookie_name, value=token, expires=self.config.cookie_expires, httponly=True)
 		return response
 
 	# get_signin
-	def get_signed(self, request):
+	def get_signin(self, request):
 		# get the cookie
 		cookie = request.cookies.get(self.config.cookie_name)
 

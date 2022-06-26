@@ -9,4 +9,4 @@ class Handler:
         return self.auth.is_signed(request, user, self.auth.signin)
 
     def get_signin(self, request):
-        return self.auth.get_signed(request)
+        return self.auth.get_signin(request)
